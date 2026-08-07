@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { urges as urgesApi } from '../api/client';
+import { urges as urgesApi, user as userApi } from '../api/client';
 import { useApp } from '../context/AppContext';
 import { TriggerType, TRIGGER_LABELS, TRIGGER_EMOJI } from '../types';
 import BreathingTimer from '../components/BreathingTimer';
@@ -12,17 +12,20 @@ type Step = 'trigger' | 'surf' | 'outcome';
 
 export default function LogUrge() {
   const navigate = useNavigate();
-  const { dashboard, refresh } = useApp();
+  const { refresh } = useApp();
   const [step, setStep] = useState<Step>('trigger');
   const [triggerType, setTriggerType] = useState<TriggerType | null>(null);
   const [resisted, setResisted] = useState<boolean | null>(null);
   const [replacementUsed, setReplacementUsed] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
+  const [userHabits, setUserHabits] = useState<string[]>([]);
 
-  const userHabits = dashboard
-    ? (dashboard as any).replacementHabits?.split(',').filter(Boolean) || []
-    : [];
+  useEffect(() => {
+    userApi.profile()
+      .then(p => setUserHabits(p.replacementHabits?.split(',').filter(Boolean) ?? []))
+      .catch(() => {});
+  }, []);
 
   const handleSave = async (didResist: boolean) => {
     if (!triggerType) return;

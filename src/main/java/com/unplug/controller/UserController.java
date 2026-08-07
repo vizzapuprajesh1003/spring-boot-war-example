@@ -18,6 +18,11 @@ public class UserController {
         this.service = service;
     }
 
+    @GetMapping("/health")
+    public Map<String, String> health() {
+        return Map.of("status", "ok");
+    }
+
     @GetMapping("/status")
     public Map<String, Object> status() {
         boolean setup = service.isSetupComplete();

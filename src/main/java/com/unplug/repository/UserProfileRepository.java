@@ -1,0 +1,6 @@
+package com.unplug.repository;
+
+import com.unplug.model.UserProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {}
